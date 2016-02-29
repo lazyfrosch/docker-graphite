@@ -36,7 +36,10 @@ RUN \
   git clone https://github.com/graphite-project/graphite-web.git /src/graphite-web && \
   cd /src/whisper      &&  git checkout 0.9.x &&  python setup.py install && \
   cd /src/carbon       &&  git checkout 0.9.x &&  python setup.py install && \
-  cd /src/graphite-web &&  git checkout 0.9.x &&  python setup.py install
+  cd /src/graphite-web &&  git checkout 0.9.x &&  python setup.py install && \
+  apk del --purge \
+    git && \
+    rm -rf /src/* /tmp/* /var/cache/apk/*
 
 ADD rootfs/ /
 
