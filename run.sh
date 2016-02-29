@@ -16,6 +16,7 @@ docker run \
   --detach \
   --publish=2003:2003 \
   --publish=7002:7002 \
+  --publish=8080:8080 \
   --name ${CONTAINER_NAME} \
   ${TAG_NAME}
 
