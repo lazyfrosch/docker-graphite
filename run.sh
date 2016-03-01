@@ -17,6 +17,7 @@ docker run \
   --publish=2003:2003 \
   --publish=7002:7002 \
   --publish=8080:8080 \
+  --hostname=${USER}-${TYPE} \
   --name ${CONTAINER_NAME} \
   ${TAG_NAME}
 
