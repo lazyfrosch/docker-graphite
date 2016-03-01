@@ -29,7 +29,6 @@ RUN \
     "django-tagging<0.4"
 
 RUN \
-  mkdir /var/log/supervisor && \
   mkdir /src && \
   git clone https://github.com/graphite-project/whisper.git      /src/whisper      && \
   git clone https://github.com/graphite-project/carbon.git       /src/carbon       && \

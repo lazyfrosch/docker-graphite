@@ -3,12 +3,12 @@
 ## based on
 alpine:3.3
 
-## includes 
+## includes
      graphite-web
-     whisper 
+     whisper
      carbon-cache
 
-## memory-footprint 
+## memory-footprint
 ~200MiB
 
 ## usage
@@ -19,4 +19,5 @@ alpine:3.3
 ### run
      docker run -P my-graphite-node put-your-name-here
 
-    
+## HINT
+use the dynamic DNS Script taken from [blog.amartynov.ru](https://blog.amartynov.ru/archives/dnsmasq-docker-service-discovery) to resolve DNS between Containers
