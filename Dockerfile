@@ -2,7 +2,7 @@ FROM alpine:3.3
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="0.9.0"
+LABEL version="1.0.0"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
@@ -50,7 +50,7 @@ RUN \
   cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput && \
   mv /opt/graphite/conf/graphite.wsgi.example /opt/graphite/webapp/graphite/graphite_wsgi.py
 
-VOLUME ["/var/log/supervisor"]
+VOLUME ["/opt/graphite/storage"]
 
 CMD [ "/usr/bin/supervisord" ]
 
