@@ -2,7 +2,7 @@ FROM alpine:3.3
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1.0.0"
+LABEL version="1.1.0"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
@@ -20,7 +20,8 @@ RUN \
     py-pip \
     py-cairo \
     py-twisted \
-    py-gunicorn && \
+    py-gunicorn \
+    memcached &&\
   pip install --upgrade pip && \
   pip install \
     pytz \
