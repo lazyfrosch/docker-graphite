@@ -2,7 +2,7 @@ FROM alpine:3.3
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1.1.0"
+LABEL version="1.2.0"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
@@ -21,7 +21,10 @@ RUN \
     py-cairo \
     py-twisted \
     py-gunicorn \
-    memcached &&\
+    py-mysqldb \
+    memcached \
+    pwgen \
+    mysql-client && \
   pip install --upgrade pip && \
   pip install \
     pytz \
@@ -32,27 +35,27 @@ RUN \
 RUN \
   mkdir /src && \
   git clone https://github.com/graphite-project/whisper.git      /src/whisper      && \
+  cd /src/whisper      &&  git checkout 0.9.x &&  python setup.py install
+
+RUN \
   git clone https://github.com/graphite-project/carbon.git       /src/carbon       && \
+  cd /src/carbon       &&  git checkout 0.9.x &&  python setup.py install
+
+RUN \
   git clone https://github.com/graphite-project/graphite-web.git /src/graphite-web && \
-  cd /src/whisper      &&  git checkout 0.9.x &&  python setup.py install && \
-  cd /src/carbon       &&  git checkout 0.9.x &&  python setup.py install && \
   cd /src/graphite-web &&  git checkout 0.9.x &&  python setup.py install && \
+  mv /opt/graphite/conf/graphite.wsgi.example /opt/graphite/webapp/graphite/graphite_wsgi.py
+
+RUN \
   apk del --purge \
     git && \
     rm -rf /src/* /tmp/* /var/cache/apk/*
 
 ADD rootfs/ /
 
-RUN \
-  touch /opt/graphite/storage/graphite.db /opt/graphite/storage/index && \
-  chown -R nginx /opt/graphite/storage && \
-  chmod 0775 /opt/graphite/storage /opt/graphite/storage/whisper && \
-  chmod 0664 /opt/graphite/storage/graphite.db && \
-  cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput && \
-  mv /opt/graphite/conf/graphite.wsgi.example /opt/graphite/webapp/graphite/graphite_wsgi.py
+WORKDIR  [ '/opt/graphite' ]
+VOLUME [ '/app/graphite/storage' ]
 
-VOLUME ["/opt/graphite/storage"]
-
-CMD [ "/usr/bin/supervisord" ]
+CMD [ "/opt/startup.sh" ]
 
 # EOF

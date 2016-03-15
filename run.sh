@@ -8,18 +8,27 @@ then
   docker rm   ${CONTAINER_NAME} 2> /dev/null
 fi
 
+DATABASE_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${USER}-mysql)
+
 # ---------------------------------------------------------------------------------------
 
 docker run \
   --interactive \
   --tty \
   --detach \
+  --env DATABASE_GRAPHITE_TYPE=mysql \
+  --env DATABASE_GRAPHITE_HOST=${DATABASE_IP} \
+  --env DATABASE_GRAPHITE_PORT=3306 \
+  --env DATABASE_ROOT_USER=root \
+  --env DATABASE_ROOT_PASS=foo.bar.Z \
   --publish=2003:2003 \
   --publish=7002:7002 \
   --publish=8088:8080 \
+  --volume=${DATA_DIR}/${TYPE}:/app \
   --hostname=${USER}-${TYPE} \
   --name ${CONTAINER_NAME} \
   ${TAG_NAME}
 
 # ---------------------------------------------------------------------------------------
 # EOF
+
