@@ -10,6 +10,14 @@ fi
 
 DATABASE_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${USER}-mysql)
 
+DATA_DIR={DATA_DIR:-/tmp/docker}
+
+if [ -z ${DATABASE_IP} ]
+then
+  echo "No Database Container '${USER}-mysql' running!"
+  exit 1
+fi
+
 # ---------------------------------------------------------------------------------------
 
 docker run \
