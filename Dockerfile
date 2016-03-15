@@ -1,8 +1,9 @@
-FROM alpine:3.3
+
+FROM alpine:latest
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1.2.0"
+LABEL version="1.2.1"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
