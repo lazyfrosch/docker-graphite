@@ -10,13 +10,10 @@ fi
 
 DATABASE_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${USER}-mysql)
 
-DATA_DIR={DATA_DIR:-/tmp/docker}
+[ -z ${DATABASE_IP} ] && { echo "No Database Container '${USER}-mysql' running!"; exit 1; }
 
-if [ -z ${DATABASE_IP} ]
-then
-  echo "No Database Container '${USER}-mysql' running!"
-  exit 1
-fi
+DOCKER_DBA_ROOT_PASS=${DOCKER_DBA_ROOT_PASS:-foo.bar.Z}
+DOCKER_DATA_DIR=${DOCKER_DATA_DIR:-${DATA_DIR}}
 
 # ---------------------------------------------------------------------------------------
 
@@ -28,11 +25,11 @@ docker run \
   --env DATABASE_GRAPHITE_HOST=${DATABASE_IP} \
   --env DATABASE_GRAPHITE_PORT=3306 \
   --env DATABASE_ROOT_USER=root \
-  --env DATABASE_ROOT_PASS=foo.bar.Z \
+  --env DATABASE_ROOT_PASS=${DOCKER_DBA_ROOT_PASS} \
   --publish=2003:2003 \
   --publish=7002:7002 \
   --publish=8088:8080 \
-  --volume=${DATA_DIR}/${TYPE}:/app \
+  --volume=${DOCKER_DATA_DIR}/${TYPE}:/app \
   --hostname=${USER}-${TYPE} \
   --name ${CONTAINER_NAME} \
   ${TAG_NAME}

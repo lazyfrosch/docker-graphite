@@ -1,13 +1,13 @@
 # docker-graphite
 
 ## based on
-alpine:3.3
+alpine:latest
 
 ## includes
-    graphite-web
-    whisper
-    carbon-cache
-    nginx
+ - graphite-web
+ - whisper
+ - carbon-cache
+ - nginx
 
 ## Ports
  - 2003: the Carbon line receiver port
