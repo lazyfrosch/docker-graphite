@@ -62,7 +62,8 @@ RUN \
 
 ADD rootfs/ /
 
-WORKDIR  [ '/opt/graphite' ]
+WORKDIR  '/opt/graphite'
+
 VOLUME [ '/app/graphite/storage' ]
 
 CMD [ "/opt/startup.sh" ]

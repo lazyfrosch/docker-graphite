@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set -e
+set -x
 
 initfile=/opt/run.init
 
@@ -37,10 +38,14 @@ prepareDatabase() {
 
   local CONFIG_FILE="/opt/graphite/webapp/graphite/local_settings.py"
 
-  if [ ! -f /opt/graphite/webapp/graphite/local_settings.py ]
+  if [ ! -f ${CONFIG_FILE} ]
   then
-    cp /opt/graphite/webapp/graphite/local_settings.py-DIST /opt/graphite/webapp/graphite/local_settings.py
+    cp ${CONFIG_FILE}-DIST ${CONFIG_FILE}
   fi
+
+  sed -i \
+    -e "s|%STORAGE_PATH%|${STORAGE_PATH}|g" \
+    ${CONFIG_FILE}
 
   if [ "${DATABASE_GRAPHITE_TYPE}" == "sqlite" ]
   then
