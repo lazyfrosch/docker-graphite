@@ -1,5 +1,5 @@
 
-FROM alpine:edge
+FROM docker-alpine-base:latest
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
@@ -13,17 +13,11 @@ EXPOSE 2003 7002 8080
 # ---------------------------------------------------------------------------------------
 
 RUN \
-  apk --quiet update && \
-  apk --quiet upgrade
-
-RUN \
-  rm -Rf /var/run && \
-  ln -s /run /var/run
+  apk --quiet update
 
 RUN \
   apk --quiet add \
     git \
-    supervisor \
     nginx \
     python \
     py-pip \
