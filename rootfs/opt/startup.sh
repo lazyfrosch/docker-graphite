@@ -14,15 +14,6 @@ DATABASE_ROOT_PASS=${DATABASE_ROOT_PASS:-""}
 
 STORAGE_PATH=${STORAGE_PATH:-/app}
 
-# wait for needed database
-#while ! nc -z ${GRAPHITE_HOST} ${GRAPHITE_PORT}
-#do
-#  sleep 3s
-#done
-
-# must start initdb and do other jobs well
-#sleep 10s
-
 # -------------------------------------------------------------------------------------------------
 
 prepareStorage() {
@@ -131,7 +122,7 @@ then
 
 fi
 
-echo -e "\n Starting Supervisor.\n  You can safely CTRL-C and the container will continue to run with or without the -d (daemon) option\n\n"
+echo -e "\n Starting Supervisor.\n\n"
 
 if [ -f /etc/supervisord.conf ]
 then
