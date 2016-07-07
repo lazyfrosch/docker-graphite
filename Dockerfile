@@ -2,7 +2,7 @@ FROM bodsch/docker-alpine-base:latest
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1.3.0"
+LABEL version="1.3.1"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
@@ -25,19 +25,21 @@ RUN \
     memcached \
     pwgen \
     mysql-client && \
-  pip install --upgrade pip && \
   pip install \
+    --trusted-host http://d.pypi.python.org/simple --upgrade pip && \
+  pip install \
+    --trusted-host http://d.pypi.python.org/simple \
     pytz \
-    Django==1.5 \
-    python-memcached \
+    python-memcached==1.57 \
+    Django==1.5.12 \
     "django-tagging<0.4" && \
   mkdir /src && \
   git clone https://github.com/graphite-project/whisper.git      /src/whisper      && \
   git clone https://github.com/graphite-project/carbon.git       /src/carbon       && \
   git clone https://github.com/graphite-project/graphite-web.git /src/graphite-web && \
-  cd /src/whisper      &&  git checkout 0.9.x &&  python setup.py install && \
-  cd /src/carbon       &&  git checkout 0.9.x &&  python setup.py install && \
-  cd /src/graphite-web &&  git checkout 0.9.x &&  python setup.py install && \
+  cd /src/whisper      &&  git checkout 0.9.x &&  python setup.py install --quiet && \
+  cd /src/carbon       &&  git checkout 0.9.x &&  python setup.py install --quiet && \
+  cd /src/graphite-web &&  git checkout 0.9.x &&  python setup.py install --quiet && \
   mv /opt/graphite/conf/graphite.wsgi.example /opt/graphite/webapp/graphite/graphite_wsgi.py && \
   apk del --purge \
     git && \

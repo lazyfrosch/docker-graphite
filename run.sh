@@ -10,10 +10,16 @@ fi
 
 DATABASE_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${USER}-mysql)
 
-[ -z ${DATABASE_IP} ] && { echo "No Database Container '${USER}-mysql' running!"; exit 1; }
-
-DOCKER_DBA_ROOT_PASS=${DOCKER_DBA_ROOT_PASS:-foo.bar.Z}
-DOCKER_DATA_DIR=${DOCKER_DATA_DIR:-${DATA_DIR}}
+if [ -z ${DATABASE_IP} ] 
+then
+  echo "No Database Container '${USER}-mysql' running!"
+  echo "use sqlite3 for storage"
+  DATABASE_TYPE="sqlite"
+else
+  DATABASE_TYPE="mysql"
+  DOCKER_DBA_ROOT_PASS=${DOCKER_DBA_ROOT_PASS:-foo.bar.Z}
+  DOCKER_DATA_DIR=${DOCKER_DATA_DIR:-${DATA_DIR}}
+fi
 
 # ---------------------------------------------------------------------------------------
 
@@ -21,7 +27,7 @@ docker run \
   --interactive \
   --tty \
   --detach \
-  --env DATABASE_GRAPHITE_TYPE=mysql \
+  --env DATABASE_GRAPHITE_TYPE=${DATABASE_TYPE} \
   --env DATABASE_GRAPHITE_HOST=${DATABASE_IP} \
   --env DATABASE_GRAPHITE_PORT=3306 \
   --env DATABASE_ROOT_USER=root \

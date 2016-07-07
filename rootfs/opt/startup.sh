@@ -50,12 +50,12 @@ prepareDatabase() {
     fi
 
       sed -i \
-        -e "s/%DBA_FILE%/'${STORAGE_PATH}/graphite/storage/graphite.db'/" \
-        -e "s/%DBA_ENGINE%//" \
-        -e "s/%DBA_USER%//" \
-        -e "s/%DBA_PASS%//" \
-        -e "s/%DBA_HOST%//" \
-        -e "s/%DBA_PORT%//" \
+        -e "s|%DBA_FILE%|${STORAGE_PATH}/graphite/storage/graphite.db|" \
+        -e 's|%DBA_ENGINE%|sqlite3|g' \
+        -e "s|%DBA_USER%||g" \
+        -e "s|%DBA_PASS%||g" \
+        -e "s|%DBA_HOST%||g" \
+        -e "s|%DBA_PORT%||g" \
         ${CONFIG_FILE}
 
   elif [ "${DATABASE_GRAPHITE_TYPE}" == "mysql" ]
