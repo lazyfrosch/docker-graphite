@@ -1,31 +1,54 @@
 #!/bin/sh
+#
 
-set -e
-set -x
 
-initfile=/opt/run.init
+if [ ${DEBUG} ]
+then
+  set -x
+fi
 
-DATABASE_GRAPHITE_TYPE=${DATABASE_GRAPHITE_TYPE:-sqlite}
-DATABASE_GRAPHITE_HOST=${DATABASE_GRAPHITE_HOST:-""}
-DATABASE_GRAPHITE_PORT=${DATABASE_GRAPHITE_PORT:-"3306"}
-DATABASE_GRAPHITE_PASS=${DATABASE_GRAPHITE_PASS:-$(pwgen -s 15 1)}
-DATABASE_ROOT_USER=${DATABASE_ROOT_USER:-""}
-DATABASE_ROOT_PASS=${DATABASE_ROOT_PASS:-""}
+WORK_DIR=${WORK_DIR:-/srv}
+# WORK_DIR=${WORK_DIR}/graphite
 
-STORAGE_PATH=${STORAGE_PATH:-/app}
+initfile=${WORK_DIR}/graphite/run.init
+
+DATABASE_TYPE=${DATABASE_TYPE:-sqlite}
+
+MYSQL_HOST=${MYSQL_HOST:-""}
+MYSQL_PORT=${MYSQL_PORT:-"3306"}
+MYSQL_ROOT_USER=${MYSQL_ROOT_USER:-"root"}
+MYSQL_ROOT_PASS=${MYSQL_ROOT_PASS:-""}
+
+DATABASE_GRAPHITE_PASS=$(pwgen -s 15 1)
 
 # -------------------------------------------------------------------------------------------------
 
-prepareStorage() {
+waitForDatabase() {
 
-  mkdir -p ${STORAGE_PATH}/graphite
+  # wait for needed database
+  while ! nc -z ${MYSQL_HOST} ${MYSQL_PORT}
+  do
+    sleep 3s
+  done
 
-  cp -ar /opt/graphite/storage ${STORAGE_PATH}/graphite/
-
-  chown -R nginx ${STORAGE_PATH}/graphite/storage
+  # must start initdb and do other jobs well
+  echo " [i] wait for database for there initdb and do other jobs well"
+  sleep 10s
 }
 
-prepareDatabase() {
+
+prepare() {
+
+  [ -d ${WORK_DIR}/graphite ] || mkdir -p ${WORK_DIR}/graphite
+
+  sed -i 's|^LOCAL_DATA_DIR\ =\ /opt/|LOCAL_DATA_DIR\ =\ '${WORK_DIR}'/|g' /opt/graphite/conf/carbon.conf
+
+  cp -ar /opt/graphite/storage ${WORK_DIR}/graphite/
+
+  chown -R nginx ${WORK_DIR}/graphite/storage
+}
+
+configureDatabase() {
 
   local CONFIG_FILE="/opt/graphite/webapp/graphite/local_settings.py"
 
@@ -35,22 +58,22 @@ prepareDatabase() {
   fi
 
   sed -i \
-    -e "s|%STORAGE_PATH%|${STORAGE_PATH}|g" \
+    -e "s|%STORAGE_PATH%|${WORK_DIR}|g" \
     ${CONFIG_FILE}
 
-  if [ "${DATABASE_GRAPHITE_TYPE}" == "sqlite" ]
+  if [ "${DATABASE_TYPE}" == "sqlite" ]
   then
 
-    if [ -d ${STORAGE_PATH}/graphite/storage ]
+    if [ -d ${WORK_DIR}/graphite/storage ]
     then
-      touch ${STORAGE_PATH}/graphite/storage/graphite.db
-      touch ${STORAGE_PATH}/graphite/storage/index
+      touch ${WORK_DIR}/graphite/storage/graphite.db
+      touch ${WORK_DIR}/graphite/storage/index
 
-      chmod 0664 ${STORAGE_PATH}/graphite/storage/graphite.db
+      chmod 0664 ${WORK_DIR}/graphite/storage/graphite.db
     fi
 
       sed -i \
-        -e "s|%DBA_FILE%|${STORAGE_PATH}/graphite/storage/graphite.db|" \
+        -e "s|%DBA_FILE%|${WORK_DIR}/graphite/storage/graphite.db|" \
         -e 's|%DBA_ENGINE%|sqlite3|g' \
         -e "s|%DBA_USER%||g" \
         -e "s|%DBA_PASS%||g" \
@@ -58,7 +81,7 @@ prepareDatabase() {
         -e "s|%DBA_PORT%||g" \
         ${CONFIG_FILE}
 
-  elif [ "${DATABASE_GRAPHITE_TYPE}" == "mysql" ]
+  elif [ "${DATABASE_TYPE}" == "mysql" ]
   then
 
       sed -i \
@@ -66,25 +89,27 @@ prepareDatabase() {
         -e "s/%DBA_ENGINE%/mysql/" \
         -e "s/%DBA_USER%/graphite/" \
         -e "s/%DBA_PASS%/${DATABASE_GRAPHITE_PASS}/" \
-        -e "s/%DBA_HOST%/${DATABASE_GRAPHITE_HOST}/" \
-        -e "s/%DBA_PORT%/${DATABASE_GRAPHITE_PORT}/" \
+        -e "s/%DBA_HOST%/${MYSQL_HOST}/" \
+        -e "s/%DBA_PORT%/${MYSQL_PORT}/" \
         ${CONFIG_FILE}
 
-    mysql_opts="--host=${DATABASE_GRAPHITE_HOST} --user=${DATABASE_ROOT_USER} --password=${DATABASE_ROOT_PASS} --port=${DATABASE_GRAPHITE_PORT}"
+    mysql_opts="--host=${MYSQL_HOST} --user=${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASS} --port=${MYSQL_PORT}"
 
-    if [ -z ${DATABASE_GRAPHITE_HOST} ]
+    if [ -z ${MYSQL_HOST} ]
     then
-      echo " [E] - i found no DATABASE_GRAPHITE_HOST Parameter for type: '${DATABASE_GRAPHITE_TYPE}'"
+      echo " [E] - i found no MYSQL_HOST Parameter for type: '${DATABASE_TYPE}'"
     else
 
       # wait for needed database
-      while ! nc -z ${DATABASE_GRAPHITE_HOST} ${DATABASE_GRAPHITE_PORT}
+      while ! nc -z ${MYSQL_HOST} ${MYSQL_PORT}
       do
         sleep 3s
       done
 
       # must start initdb and do other jobs well
       sleep 10s
+
+      waitForDatabase
 
       (
         echo "--- create user 'graphite'@'%' IDENTIFIED BY '${DATABASE_GRAPHITE_PASS}';"
@@ -94,25 +119,34 @@ prepareDatabase() {
       ) | mysql ${mysql_opts}
 
     fi
-
+  else
+    echo " [E] unsupported Databasetype '${DATABASE_TYPE}'"
+    exit 1
   fi
 
-  chown -R nginx ${STORAGE_PATH}/graphite/storage
-}
-
-# -------------------------------------------------------------------------------------------------
-
-if [ ! -f "${initfile}" ]
-then
-
-  sed -i 's|^LOCAL_DATA_DIR\ =\ /opt/|LOCAL_DATA_DIR\ =\ '${STORAGE_PATH}'/|g' /opt/graphite/conf/carbon.conf
-
-  prepareStorage
-  prepareDatabase
+  chown -R nginx ${WORK_DIR}/graphite/storage
 
   cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
 
   touch ${initfile}
+}
+
+startSupervisor() {
+
+  echo -e "\n Starting Supervisor.\n\n"
+
+  if [ -f /etc/supervisord.conf ]
+  then
+    /usr/bin/supervisord -c /etc/supervisord.conf >> /dev/null
+  fi
+}
+
+# -------------------------------------------------------------------------------------------------
+
+run() {
+
+  prepare
+  configureDatabase
 
   echo -e "\n"
   echo " ==================================================================="
@@ -120,14 +154,10 @@ then
   echo " ==================================================================="
   echo ""
 
-fi
+  startSupervisor
 
-echo -e "\n Starting Supervisor.\n\n"
+}
 
-if [ -f /etc/supervisord.conf ]
-then
-  /usr/bin/supervisord -c /etc/supervisord.conf >> /dev/null
-fi
-
+run
 
 # EOF

@@ -2,7 +2,7 @@ FROM bodsch/docker-alpine-base:latest
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1.3.1"
+LABEL version="1.4.0"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
@@ -43,11 +43,12 @@ RUN \
   mv /opt/graphite/conf/graphite.wsgi.example /opt/graphite/webapp/graphite/graphite_wsgi.py && \
   apk del --purge \
     git && \
-    rm -rf /src /tmp/* /var/cache/apk/*
+  rm -rf \
+    /src \
+    /tmp/* \
+    /var/cache/apk/*
 
 ADD rootfs/ /
-
-WORKDIR  '/opt/graphite'
 
 CMD [ "/opt/startup.sh" ]
 
