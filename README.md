@@ -1,31 +1,29 @@
-# docker-graphite
+docker-graphite
+=================
 
-## based on
-alpine:latest
+A Docker container for an complete graphite Stack. Usable in combination with Grafana.
 
-## includes
+# Status
+
+[![Build Status](https://travis-ci.org/bodsch/docker-graphite.svg?branch=master)](https://travis-ci.org/bodsch/docker-graphite)
+
+# Build
+
+# Docker Hub
+
+You can find the Container also at  [DockerHub](https://hub.docker.com/r/bodsch/docker-graphite/)
+
+# supported Environment Vars
+
+
+# includes
  - graphite-web
  - whisper
  - carbon-cache
  - nginx
 
-## Ports
+# Ports
  - 2003: the Carbon line receiver port
  - 7002: the Carbon cache query port
  - 8080: the Graphite-Web port
-
-## memory-footprint
-~220MiB
-
-## usage
-Small and simple configuration located in ``config.rc``
-
-### requirements
-Require an mysql Docker like my own [docker-mysql](https://github.com/bodsch/docker-mysql).
-
-### build
-    ./build.sh
-
-### run
-    ./run.sh
 
