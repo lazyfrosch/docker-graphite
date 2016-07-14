@@ -19,7 +19,7 @@ MYSQL_PORT=${MYSQL_PORT:-"3306"}
 MYSQL_ROOT_USER=${MYSQL_ROOT_USER:-"root"}
 MYSQL_ROOT_PASS=${MYSQL_ROOT_PASS:-""}
 
-DATABASE_GRAPHITE_PASS=$(pwgen -s 15 1)
+DATABASE_GRAPHITE_PASS=graphite # $(pwgen -s 15 1)
 
 # -------------------------------------------------------------------------------------------------
 
