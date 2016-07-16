@@ -19,7 +19,10 @@ MYSQL_PORT=${MYSQL_PORT:-"3306"}
 MYSQL_ROOT_USER=${MYSQL_ROOT_USER:-"root"}
 MYSQL_ROOT_PASS=${MYSQL_ROOT_PASS:-""}
 
-DATABASE_GRAPHITE_PASS=graphite # $(pwgen -s 15 1)
+MEMCACHE_HOST=${MEMCACHE_HOST:-""}
+MEMCACHE_PORT=${MEMCACHE_PORT:-11211}
+
+DATABASE_GRAPHITE_PASS=${DATABASE_GRAPHITE_PASS:-graphite}
 
 # -------------------------------------------------------------------------------------------------
 
@@ -46,9 +49,6 @@ prepare() {
   cp -ar /opt/graphite/storage ${WORK_DIR}/graphite/
 
   chown -R nginx ${WORK_DIR}/graphite/storage
-}
-
-configureDatabase() {
 
   local CONFIG_FILE="/opt/graphite/webapp/graphite/local_settings.py"
 
@@ -60,6 +60,18 @@ configureDatabase() {
   sed -i \
     -e "s|%STORAGE_PATH%|${WORK_DIR}|g" \
     ${CONFIG_FILE}
+
+  if [ ! -z ${MEMCACHE_HOST} ]
+  then
+    sed -i \
+      -e 's|%MEMCACHE_HOST%|'${MEMCACHE_HOST}'|g' \
+      -e 's|%MEMCACHE_PORT%|'${MEMCACHE_PORT}'|g' \
+      -e 's|# MEMCACHE_HOSTS|MEMCACHE_HOSTS|g' \
+      ${CONFIG_FILE}
+  fi
+}
+
+configureDatabase() {
 
   if [ "${DATABASE_TYPE}" == "sqlite" ]
   then
@@ -126,6 +138,8 @@ configureDatabase() {
 
   chown -R nginx ${WORK_DIR}/graphite/storage
 
+  sleep 2s
+
   cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
 
   touch ${initfile}
@@ -150,7 +164,7 @@ run() {
 
   echo -e "\n"
   echo " ==================================================================="
-  echo " Graphite DatabaseUser 'graphite' password set to ${DATABASE_GRAPHITE_PASS}"
+  echo " Graphite DatabaseUser 'graphite' password set to '${DATABASE_GRAPHITE_PASS}'"
   echo " ==================================================================="
   echo ""
 
