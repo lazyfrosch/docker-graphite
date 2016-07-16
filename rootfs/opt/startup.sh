@@ -24,6 +24,8 @@ MEMCACHE_PORT=${MEMCACHE_PORT:-11211}
 
 DATABASE_GRAPHITE_PASS=${DATABASE_GRAPHITE_PASS:-graphite}
 
+CONFIG_FILE="/opt/graphite/webapp/graphite/local_settings.py"
+
 # -------------------------------------------------------------------------------------------------
 
 waitForDatabase() {
@@ -49,8 +51,6 @@ prepare() {
   cp -ar /opt/graphite/storage ${WORK_DIR}/graphite/
 
   chown -R nginx ${WORK_DIR}/graphite/storage
-
-  local CONFIG_FILE="/opt/graphite/webapp/graphite/local_settings.py"
 
   if [ ! -f ${CONFIG_FILE} ]
   then
