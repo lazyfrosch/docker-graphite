@@ -22,7 +22,6 @@ RUN \
     py-twisted \
     py-gunicorn \
     py-mysqldb \
-    memcached \
     pwgen \
     mysql-client && \
   pip install \

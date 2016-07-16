@@ -3,7 +3,7 @@ SECRET_KEY = 'AYGKXwz5gaH98MsSDlIviZKJLh4a9eucEu5iivdn'
 
 TIME_ZONE = 'Europe/Berlin'
 
-MEMCACHE_HOSTS = ['127.0.0.1:11211']
+# MEMCACHE_HOSTS = ['%MEMCACHE_HOST%:11211']
 
 DATABASES = {
   'default': {
@@ -23,4 +23,3 @@ RRD_DIR     = '%STORAGE_PATH%/graphite/storage/rrd'
 #DATA_DIRS   = [WHISPER_DIR, RRD_DIR] # Default: set from the above variables
 LOG_DIR     = '%STORAGE_PATH%/graphite/storage/log/webapp'
 INDEX_FILE  = '%STORAGE_PATH%/graphite/storage/index'  # Search index file
-
