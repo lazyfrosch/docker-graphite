@@ -1,4 +1,5 @@
-FROM bodsch/docker-alpine-base:latest
+
+FROM bodsch/docker-alpine-base:3.4
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
