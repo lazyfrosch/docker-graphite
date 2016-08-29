@@ -31,14 +31,20 @@ CONFIG_FILE="/opt/graphite/webapp/graphite/local_settings.py"
 waitForDatabase() {
 
   # wait for needed database
-  while ! nc -z ${MYSQL_HOST} ${MYSQL_PORT}
-  do
-    sleep 3s
-  done
+#  while ! nc -z ${MYSQL_HOST} ${MYSQL_PORT}
+#  do
+#    sleep 3s
+#  done
 
   # must start initdb and do other jobs well
   echo " [i] wait for database for there initdb and do other jobs well"
-  sleep 10s
+
+  until mysql ${mysql_opts} --execute="select 1 from mysql.user limit 1" > /dev/null
+  do
+    echo " . "
+    sleep 3s
+  done
+
 }
 
 
