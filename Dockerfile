@@ -23,6 +23,7 @@ RUN \
     py-cairo \
     py-twisted \
     py-gunicorn \
+    py-parsing \
     py-mysqldb \
     pwgen \
     mysql-client && \
