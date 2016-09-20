@@ -146,7 +146,9 @@ configureDatabase() {
 
   sleep 2s
 
-  cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
+  PYTHONPATH=/opt/graphite/webapp django-admin.py syncdb --settings=graphite.settings --noinput
+#   PYTHONPATH=/opt/graphite/webapp django-admin.py syncdb
+#  cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
 
   touch ${initfile}
 }
