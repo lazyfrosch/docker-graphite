@@ -12,19 +12,22 @@ A Docker container for an complete graphite Stack. Usable in combination with Gr
 Your can use the included Makefile.
 
 To build the Container:
-```make build```
+    make build
 
 Starts the Container:
-```make run```
+    make run
 
 Starts the Container with Login Shell:
-```make shell```
+    make shell
 
 Entering the Container:
-```make exec```
+    make exec
 
 Stop (but **not kill**):
-```make stop```
+    make stop
+
+History
+    make history
 
 # Docker Hub
 
