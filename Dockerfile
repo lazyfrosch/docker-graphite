@@ -1,9 +1,9 @@
 
-FROM bodsch/docker-alpine-base:1609-01
+FROM bodsch/docker-alpine-base:1610-01
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1.5.0"
+LABEL version="1.5.1"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
@@ -50,7 +50,7 @@ RUN \
     /tmp/* \
     /var/cache/apk/*
 
-ADD rootfs/ /
+COPY rootfs/ /
 
 CMD [ "/opt/startup.sh" ]
 
