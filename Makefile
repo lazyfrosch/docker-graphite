@@ -2,6 +2,7 @@
 CONTAINER  := graphite
 IMAGE_NAME := docker-graphite
 
+DATA_DIR   := /tmp/docker-data
 
 build:
 	docker \
@@ -18,6 +19,7 @@ run:
 		--publish=2003:2003 \
 		--publish=7002:7002 \
 		--publish=8088:8080 \
+		--volume=${DATA_DIR}:/srv \
 		--hostname=${CONTAINER} \
 		--name=${CONTAINER} \
 		$(IMAGE_NAME)
@@ -31,6 +33,7 @@ shell:
 		--publish=2003:2003 \
 		--publish=7002:7002 \
 		--publish=8088:8080 \
+		--volume=${DATA_DIR}:/srv \
 		--hostname=${CONTAINER} \
 		--name=${CONTAINER} \
 		$(IMAGE_NAME)

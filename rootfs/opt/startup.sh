@@ -111,7 +111,7 @@ configureDatabase() {
         -e "s/%DBA_PORT%/${MYSQL_PORT}/" \
         ${CONFIG_FILE}
 
-    mysql_opts="--host=${MYSQL_HOST} --user=${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASS} --port=${MYSQL_PORT}"
+    export mysql_opts="--host=${MYSQL_HOST} --user=${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASS} --port=${MYSQL_PORT}"
 
     if [ -z ${MYSQL_HOST} ]
     then
@@ -119,14 +119,6 @@ configureDatabase() {
     else
 
       # wait for needed database
-      while ! nc -z ${MYSQL_HOST} ${MYSQL_PORT}
-      do
-        sleep 3s
-      done
-
-      # must start initdb and do other jobs well
-      sleep 10s
-
       waitForDatabase
 
       (
@@ -146,9 +138,8 @@ configureDatabase() {
 
   sleep 2s
 
-  PYTHONPATH=/opt/graphite/webapp django-admin.py syncdb --settings=graphite.settings --noinput
-#   PYTHONPATH=/opt/graphite/webapp django-admin.py syncdb
-#  cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
+  PYTHONPATH=/opt/graphite/webapp django-admin.py migrate --verbosity 1 --settings=graphite.settings --noinput
+  PYTHONPATH=/opt/graphite/webapp django-admin.py migrate --verbosity 1 --run-syncdb --settings=graphite.settings --noinput
 
   touch ${initfile}
 }
