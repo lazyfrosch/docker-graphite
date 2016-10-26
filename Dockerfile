@@ -1,9 +1,9 @@
 
-FROM bodsch/docker-alpine-base:1610-01
+FROM bodsch/docker-alpine-base:1610-02
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1.6.0"
+LABEL version="1.6.1"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
@@ -13,9 +13,9 @@ EXPOSE 2003 7002 8080
 # ---------------------------------------------------------------------------------------
 
 RUN \
-  apk --quiet --no-cache update && \
-  apk --quiet --no-cache upgrade && \
-  apk --quiet --no-cache add \
+  apk --no-cache update && \
+  apk --no-cache upgrade && \
+  apk --no-cache add \
     build-base \
     libffi-dev \
     python2-dev \
@@ -51,6 +51,6 @@ RUN \
 
 COPY rootfs/ /
 
-CMD [ "/opt/startup.sh" ]
+CMD /opt/startup.sh
 
-# EOF
+# ---------------------------------------------------------------------------------------
