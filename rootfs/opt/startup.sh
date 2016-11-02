@@ -8,7 +8,6 @@ then
 fi
 
 WORK_DIR=${WORK_DIR:-/srv}
-# WORK_DIR=${WORK_DIR}/graphite
 
 initfile=${WORK_DIR}/graphite/run.init
 
@@ -23,6 +22,8 @@ MEMCACHE_HOST=${MEMCACHE_HOST:-""}
 MEMCACHE_PORT=${MEMCACHE_PORT:-11211}
 
 DATABASE_GRAPHITE_PASS=${DATABASE_GRAPHITE_PASS:-graphite}
+
+USE_EXTERNAL_CARBON=${USE_EXTERNAL_CARBON:-false}
 
 CONFIG_FILE="/opt/graphite/webapp/graphite/local_settings.py"
 
@@ -52,7 +53,9 @@ prepare() {
 
   [ -d ${WORK_DIR}/graphite ] || mkdir -p ${WORK_DIR}/graphite
 
-  sed -i 's|^LOCAL_DATA_DIR\ =\ /opt/|LOCAL_DATA_DIR\ =\ '${WORK_DIR}'/|g' /opt/graphite/conf/carbon.conf
+  sed -i \
+    "s|%STORAGE_PATH%|${WORK_DIR}|g" \
+    /opt/graphite/conf/carbon.conf
 
   cp -ar /opt/graphite/storage ${WORK_DIR}/graphite/
 
@@ -75,6 +78,16 @@ prepare() {
       -e 's|# MEMCACHE_HOSTS|MEMCACHE_HOSTS|g' \
       ${CONFIG_FILE}
   fi
+
+  [ -d /var/log/graphite ] || mkdir /var/log/graphite
+  chown nginx: /var/log/graphite
+
+  # we will use another carbon service, like go-carbon
+  if [ ${USE_EXTERNAL_CARBON} == true ]
+  then
+    rm -f /etc/supervisor.d/carbon-cache.ini
+  fi
+
 }
 
 configureDatabase() {

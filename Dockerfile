@@ -3,12 +3,12 @@ FROM bodsch/docker-alpine-base:1610-02
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1.6.1"
+LABEL version="1.7.0"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
 # 8080: Graphite-Web port
-EXPOSE 2003 7002 8080
+EXPOSE 2003 2003/udp 7002 8080
 
 # ---------------------------------------------------------------------------------------
 
