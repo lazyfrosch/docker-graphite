@@ -95,16 +95,16 @@ configureDatabase() {
   if [ "${DATABASE_TYPE}" == "sqlite" ]
   then
 
-    if [ -d ${WORK_DIR}/graphite/storage ]
-    then
-      touch ${WORK_DIR}/graphite/storage/graphite.db
-      touch ${WORK_DIR}/graphite/storage/index
-
-      chmod 0664 ${WORK_DIR}/graphite/storage/graphite.db
-    fi
+#    if [ -f /tmp/graphite.db ]
+#    then
+#      touch ${WORK_DIR}/graphite/storage/graphite.db
+#      touch ${WORK_DIR}/graphite/storage/index
+#
+#      chmod 0664 ${WORK_DIR}/graphite/storage/graphite.db
+#    fi
 
     sed -i \
-      -e "s|%DBA_FILE%|${WORK_DIR}/graphite/storage/graphite.db|" \
+      -e "s|%DBA_FILE%|/tmp/graphite.db|" \
       -e 's|%DBA_ENGINE%|sqlite3|g' \
       -e "s|%DBA_USER%||g" \
       -e "s|%DBA_PASS%||g" \
