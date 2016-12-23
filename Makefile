@@ -1,40 +1,55 @@
-TYPE := graphite
-IMAGE_NAME := ${USER}-docker-${TYPE}
+
+CONTAINER  := graphite
+IMAGE_NAME := docker-graphite
+
+DATA_DIR   := /tmp/docker-data
 
 build:
-	docker build --rm --tag=$(IMAGE_NAME) .
+	docker \
+		build \
+		--rm --tag=$(IMAGE_NAME) .
+	@echo Image tag: ${IMAGE_NAME}
 
 run:
-	docker run \
+	docker \
+		run \
 		--detach \
 		--interactive \
 		--tty \
 		--publish=2003:2003 \
 		--publish=7002:7002 \
 		--publish=8088:8080 \
-		--hostname=${USER}-graphite \
-		--name=${USER}-${TYPE} \
+		--volume=${DATA_DIR}:/srv \
+		--hostname=${CONTAINER} \
+		--name=${CONTAINER} \
 		$(IMAGE_NAME)
 
 shell:
-	docker run \
+	docker \
+		run \
 		--rm \
 		--interactive \
-		--publish=2003:2003 \
-		--publish=7002:7002 \
-		--publish=8088:8080 \
 		--tty \
-		--hostname=${USER}-graphite \
-		--name=${USER}-${TYPE} \
-		$(IMAGE_NAME)
+		--volume=${DATA_DIR}:/srv \
+		--env USE_EXTERNAL_CARBON=true \
+		--hostname=${CONTAINER} \
+		--name=${CONTAINER} \
+		$(IMAGE_NAME) \
+		/bin/bash
 
 exec:
-	docker exec \
+	docker \
+		exec \
 		--interactive \
 		--tty \
-		${USER}-${TYPE} \
+		${CONTAINER} \
 		/bin/sh
 
 stop:
-	docker kill \
-		${USER}-${TYPE}
+	docker \
+		kill ${CONTAINER}
+
+history:
+	docker \
+		history ${IMAGE_NAME}
+

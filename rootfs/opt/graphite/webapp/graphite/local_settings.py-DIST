@@ -17,9 +17,8 @@ DATABASES = {
 }
 
 ## Data directories
+LOG_DIR     = '/var/log/graphite'
 # NOTE: If any directory is unreadable in DATA_DIRS it will break metric browsing
 WHISPER_DIR = '%STORAGE_PATH%/graphite/storage/whisper'
 RRD_DIR     = '%STORAGE_PATH%/graphite/storage/rrd'
-#DATA_DIRS   = [WHISPER_DIR, RRD_DIR] # Default: set from the above variables
-LOG_DIR     = '%STORAGE_PATH%/graphite/storage/log/webapp'
 INDEX_FILE  = '%STORAGE_PATH%/graphite/storage/index'  # Search index file

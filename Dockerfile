@@ -1,55 +1,56 @@
 
-FROM bodsch/docker-alpine-base:3.4
+FROM bodsch/docker-alpine-base:1612-01
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1.4.0"
+LABEL version="1.7.1"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
 # 8080: Graphite-Web port
-EXPOSE 2003 7002 8080
+EXPOSE 2003 2003/udp 7002 8080
 
 # ---------------------------------------------------------------------------------------
 
 RUN \
-  apk --quiet --no-cache update && \
-  apk --quiet --no-cache add \
+  apk --no-cache update && \
+  apk --no-cache upgrade && \
+  apk --no-cache add \
+    build-base \
+    libffi-dev \
+    python2-dev \
     git \
     nginx \
     python \
-    py-pip \
+    py2-pip \
     py-cairo \
-    py-twisted \
-    py-gunicorn \
+    py-parsing \
     py-mysqldb \
     pwgen \
     mysql-client && \
   pip install \
     --trusted-host http://d.pypi.python.org/simple --upgrade pip && \
-  pip install \
-    --trusted-host http://d.pypi.python.org/simple \
-    pytz \
-    python-memcached==1.57 \
-    Django==1.5.12 \
-    "django-tagging<0.4" && \
   mkdir /src && \
   git clone https://github.com/graphite-project/whisper.git      /src/whisper      && \
   git clone https://github.com/graphite-project/carbon.git       /src/carbon       && \
   git clone https://github.com/graphite-project/graphite-web.git /src/graphite-web && \
-  cd /src/whisper      &&  git checkout 0.9.x &&  python setup.py install --quiet && \
-  cd /src/carbon       &&  git checkout 0.9.x &&  python setup.py install --quiet && \
-  cd /src/graphite-web &&  git checkout 0.9.x &&  python setup.py install --quiet && \
+  cd /src/graphite-web &&  pip install -r requirements.txt && \
+  cd /src/whisper      &&  python setup.py install --quiet && \
+  cd /src/carbon       &&  python setup.py install --quiet && \
+  cd /src/graphite-web &&  python setup.py install --quiet && \
   mv /opt/graphite/conf/graphite.wsgi.example /opt/graphite/webapp/graphite/graphite_wsgi.py && \
   apk del --purge \
+    build-base \
+    libffi-dev \
+    python2-dev \
     git && \
   rm -rf \
     /src \
     /tmp/* \
     /var/cache/apk/*
 
-ADD rootfs/ /
+COPY rootfs/ /
 
-CMD [ "/opt/startup.sh" ]
+CMD /opt/startup.sh
 
-# EOF
+# ---------------------------------------------------------------------------------------

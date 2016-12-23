@@ -8,7 +8,6 @@ then
 fi
 
 WORK_DIR=${WORK_DIR:-/srv}
-# WORK_DIR=${WORK_DIR}/graphite
 
 initfile=${WORK_DIR}/graphite/run.init
 
@@ -24,6 +23,8 @@ MEMCACHE_PORT=${MEMCACHE_PORT:-11211}
 
 DATABASE_GRAPHITE_PASS=${DATABASE_GRAPHITE_PASS:-graphite}
 
+USE_EXTERNAL_CARBON=${USE_EXTERNAL_CARBON:-false}
+
 CONFIG_FILE="/opt/graphite/webapp/graphite/local_settings.py"
 
 # -------------------------------------------------------------------------------------------------
@@ -31,10 +32,10 @@ CONFIG_FILE="/opt/graphite/webapp/graphite/local_settings.py"
 waitForDatabase() {
 
   # wait for needed database
-#  while ! nc -z ${MYSQL_HOST} ${MYSQL_PORT}
-#  do
-#    sleep 3s
-#  done
+  while ! nc -z ${MYSQL_HOST} ${MYSQL_PORT}
+  do
+    sleep 3s
+  done
 
   # must start initdb and do other jobs well
   echo " [i] wait for database for there initdb and do other jobs well"
@@ -52,7 +53,9 @@ prepare() {
 
   [ -d ${WORK_DIR}/graphite ] || mkdir -p ${WORK_DIR}/graphite
 
-  sed -i 's|^LOCAL_DATA_DIR\ =\ /opt/|LOCAL_DATA_DIR\ =\ '${WORK_DIR}'/|g' /opt/graphite/conf/carbon.conf
+  sed -i \
+    "s|%STORAGE_PATH%|${WORK_DIR}|g" \
+    /opt/graphite/conf/carbon.conf
 
   cp -ar /opt/graphite/storage ${WORK_DIR}/graphite/
 
@@ -75,6 +78,16 @@ prepare() {
       -e 's|# MEMCACHE_HOSTS|MEMCACHE_HOSTS|g' \
       ${CONFIG_FILE}
   fi
+
+  [ -d /var/log/graphite ] || mkdir /var/log/graphite
+  chown nginx: /var/log/graphite
+
+  # we will use another carbon service, like go-carbon
+  if [ ${USE_EXTERNAL_CARBON} == true ]
+  then
+    rm -f /etc/supervisor.d/carbon-cache.ini
+  fi
+
 }
 
 configureDatabase() {
@@ -82,16 +95,16 @@ configureDatabase() {
   if [ "${DATABASE_TYPE}" == "sqlite" ]
   then
 
-    if [ -d ${WORK_DIR}/graphite/storage ]
-    then
-      touch ${WORK_DIR}/graphite/storage/graphite.db
-      touch ${WORK_DIR}/graphite/storage/index
-
-      chmod 0664 ${WORK_DIR}/graphite/storage/graphite.db
-    fi
+#    if [ -f /tmp/graphite.db ]
+#    then
+#      touch ${WORK_DIR}/graphite/storage/graphite.db
+#      touch ${WORK_DIR}/graphite/storage/index
+#
+#      chmod 0664 ${WORK_DIR}/graphite/storage/graphite.db
+#    fi
 
     sed -i \
-      -e "s|%DBA_FILE%|${WORK_DIR}/graphite/storage/graphite.db|" \
+      -e "s|%DBA_FILE%|/tmp/graphite.db|" \
       -e 's|%DBA_ENGINE%|sqlite3|g' \
       -e "s|%DBA_USER%||g" \
       -e "s|%DBA_PASS%||g" \
@@ -111,7 +124,7 @@ configureDatabase() {
         -e "s/%DBA_PORT%/${MYSQL_PORT}/" \
         ${CONFIG_FILE}
 
-    mysql_opts="--host=${MYSQL_HOST} --user=${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASS} --port=${MYSQL_PORT}"
+    export mysql_opts="--host=${MYSQL_HOST} --user=${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASS} --port=${MYSQL_PORT}"
 
     if [ -z ${MYSQL_HOST} ]
     then
@@ -119,14 +132,6 @@ configureDatabase() {
     else
 
       # wait for needed database
-      while ! nc -z ${MYSQL_HOST} ${MYSQL_PORT}
-      do
-        sleep 3s
-      done
-
-      # must start initdb and do other jobs well
-      sleep 10s
-
       waitForDatabase
 
       (
@@ -146,7 +151,8 @@ configureDatabase() {
 
   sleep 2s
 
-  cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
+  PYTHONPATH=/opt/graphite/webapp django-admin.py migrate --verbosity 1 --settings=graphite.settings --noinput
+  PYTHONPATH=/opt/graphite/webapp django-admin.py migrate --verbosity 1 --run-syncdb --settings=graphite.settings --noinput
 
   touch ${initfile}
 }
