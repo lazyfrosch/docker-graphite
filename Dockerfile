@@ -1,9 +1,9 @@
 
-FROM bodsch/docker-alpine-base:1610-02
+FROM bodsch/docker-alpine-base:1612-01
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1.7.0"
+LABEL version="1.7.1"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
