@@ -10,6 +10,11 @@ build:
 		--rm --tag=$(IMAGE_NAME) .
 	@echo Image tag: ${IMAGE_NAME}
 
+clean:
+	docker \
+		rmi \
+		${IMAGE_NAME}
+
 run:
 	docker \
 		run \
@@ -44,6 +49,11 @@ exec:
 		--tty \
 		${CONTAINER} \
 		/bin/sh
+
+remove:
+	docker \
+		rm \
+		${CONTAINER}
 
 stop:
 	docker \
