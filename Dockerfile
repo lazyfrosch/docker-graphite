@@ -1,9 +1,9 @@
 
-FROM bodsch/docker-alpine-base:1701-02
+FROM bodsch/docker-alpine-base:1701-04
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1.7.1"
+LABEL version="1702-02"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
@@ -41,6 +41,11 @@ RUN \
   mv /opt/graphite/conf/graphite.wsgi.example /opt/graphite/webapp/graphite/graphite_wsgi.py && \
   apk del --purge \
     build-base \
+    bash \
+    nano \
+    tree \
+    curl \
+    ca-certificates \
     libffi-dev \
     python2-dev \
     git && \
@@ -51,6 +56,6 @@ RUN \
 
 COPY rootfs/ /
 
-CMD /opt/startup.sh
+CMD [ "/opt/startup.sh" ]
 
 # ---------------------------------------------------------------------------------------
