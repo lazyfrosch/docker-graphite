@@ -1,9 +1,14 @@
 
-FROM bodsch/docker-alpine-base:1701-04
+FROM alpine:latest
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1702-02"
+ENV \
+  ALPINE_MIRROR="dl-cdn.alpinelinux.org" \
+  ALPINE_VERSION="v3.5" \
+  TERM=xterm
+
+LABEL version="1703-03"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
@@ -13,13 +18,17 @@ EXPOSE 2003 2003/udp 7002 8080
 # ---------------------------------------------------------------------------------------
 
 RUN \
-  apk --no-cache update && \
-  apk --no-cache upgrade && \
-  apk --no-cache add \
+  echo "http://${ALPINE_MIRROR}/alpine/${ALPINE_VERSION}/main"       > /etc/apk/repositories && \
+  echo "http://${ALPINE_MIRROR}/alpine/${ALPINE_VERSION}/community" >> /etc/apk/repositories && \
+  apk --quiet --no-cache update && \
+  apk --quiet --no-cache upgrade && \
+  apk --quiet --no-cache add \
     build-base \
+    bash \
     libffi-dev \
     python2-dev \
     git \
+    mysql-client \
     nginx \
     python \
     py2-pip \
@@ -27,7 +36,7 @@ RUN \
     py-parsing \
     py-mysqldb \
     pwgen \
-    mysql-client && \
+    supervisor && \
   pip install \
     --trusted-host http://d.pypi.python.org/simple --upgrade pip && \
   mkdir /src && \
@@ -41,7 +50,6 @@ RUN \
   mv /opt/graphite/conf/graphite.wsgi.example /opt/graphite/webapp/graphite/graphite_wsgi.py && \
   apk del --purge \
     build-base \
-    bash \
     nano \
     tree \
     curl \
