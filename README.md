@@ -6,26 +6,32 @@ A Docker container for an complete graphite Stack. Usable in combination with Gr
 
 # Status
 
-[![Build Status](https://travis-ci.org/bodsch/docker-graphite.svg?branch=1702-02)](https://travis-ci.org/bodsch/docker-graphite)
+[![Docker Pulls](https://img.shields.io/docker/pulls/bodsch/docker-graphite.svg?branch=1704-01)][hub]
+[![Image Size](https://images.microbadger.com/badges/image/bodsch/docker-graphite.svg?branch=1704-01)][microbadger]
+[![Build Status](https://travis-ci.org/bodsch/docker-graphite.svg?branch=1704-01)][travis]
+
+[hub]: https://hub.docker.com/r/bodsch/docker-graphite/
+[microbadger]: https://microbadger.com/images/bodsch/docker-graphite
+[travis]: https://travis-ci.org/bodsch/docker-graphite
 
 
 # Build
 
 Your can use the included Makefile.
 
-To build the Container: ```make build```
+To build the Container: `make build`
 
-To remove the builded Docker Image: ```make clean```
+To remove the builded Docker Image: `make clean`
 
-Starts the Container: ```make run```
+Starts the Container: `make run`
 
-Starts the Container with Login Shell: ```make shell```
+Starts the Container with Login Shell: `make shell`
 
-Entering the Container: ```make exec```
+Entering the Container: `make exec`
 
-Stop (but **not kill**): ```make stop```
+Stop (but **not kill**): `make stop`
 
-History ```make history```
+History `make history`
 
 
 
