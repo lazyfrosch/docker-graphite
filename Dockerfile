@@ -3,13 +3,13 @@ FROM alpine:latest
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1704-01"
+LABEL version="1704-01.2"
 
 ENV \
   ALPINE_MIRROR="dl-cdn.alpinelinux.org" \
   ALPINE_VERSION="edge" \
   TERM=xterm \
-  APK_ADD="build-base git libffi-dev mysql-client nginx pwgen python python2-dev py2-pip py-cairo py-parsing py-mysqldb" \
+  APK_ADD="build-base git libffi-dev mysql-client nginx pwgen python python2-dev py2-pip py-cairo py-parsing py-mysqldb supervisor" \
   APK_DEL="build-base git libffi-dev python2-dev"
 
 # 2003: Carbon line receiver port
