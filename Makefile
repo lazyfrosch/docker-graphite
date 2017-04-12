@@ -40,7 +40,7 @@ shell:
 		--hostname=${CONTAINER} \
 		--name=${CONTAINER} \
 		$(IMAGE_NAME) \
-		/bin/bash
+		/bin/sh
 
 exec:
 	docker \
