@@ -3,19 +3,32 @@ FROM alpine:latest
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1704-01"
+LABEL version="1704-02"
 
 ENV \
   ALPINE_MIRROR="dl-cdn.alpinelinux.org" \
   ALPINE_VERSION="edge" \
   TERM=xterm \
-  APK_ADD="build-base git libffi-dev mysql-client nginx pwgen python python2-dev py2-pip py-cairo py-parsing py-mysqldb" \
+  BUILD_DATE="2017-04-08" \
+  GRAPHITE_VERSION="1.0.0" \
+  APK_ADD="build-base cairo git libffi-dev mysql-client nginx supervisor pwgen python2 python2-dev py2-pip py2-cairo py2-parsing py-mysqldb" \
   APK_DEL="build-base git libffi-dev python2-dev"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
 # 8080: Graphite-Web port
 EXPOSE 2003 2003/udp 7002 8080
+
+LABEL org.label-schema.build-date=${BUILD_DATE} \
+      org.label-schema.name="Graphite Docker Image" \
+      org.label-schema.description="Inofficial Graphite Docker Image" \
+      org.label-schema.url="https://graphite.readthedocs.io/en/latest/index.html" \
+      org.label-schema.vcs-url="https://github.com/bodsch/docker-graphite" \
+      org.label-schema.vendor="Bodo Schulz" \
+      org.label-schema.version=${GRAPHITE_VERSION} \
+      org.label-schema.schema-version="1.0" \
+      com.microscaling.docker.dockerfile="/Dockerfile" \
+      com.microscaling.license="GNU General Public License v3.0"
 
 # ---------------------------------------------------------------------------------------
 

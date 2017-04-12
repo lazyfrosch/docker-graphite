@@ -7,9 +7,7 @@ then
   set -x
 fi
 
-WORK_DIR=${WORK_DIR:-/srv}
-
-initfile=${WORK_DIR}/graphite/run.init
+WORK_DIR="/srv"
 
 DATABASE_TYPE=${DATABASE_TYPE:-sqlite}
 
@@ -80,8 +78,6 @@ setup() {
 
   PYTHONPATH=/opt/graphite/webapp django-admin.py migrate --verbosity 1 --settings=graphite.settings --noinput
   PYTHONPATH=/opt/graphite/webapp django-admin.py migrate --verbosity 1 --run-syncdb --settings=graphite.settings --noinput
-
-  touch ${initfile}
 }
 
 

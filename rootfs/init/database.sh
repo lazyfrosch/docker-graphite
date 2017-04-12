@@ -3,12 +3,13 @@
   if [ "${DATABASE_TYPE}" == "sqlite" ]
   then
 
+    echo " [i] use sqlite backend"
     . /init/database/sqlite.sh
-
 
   elif [ "${DATABASE_TYPE}" == "mysql" ]
   then
-
+  
+    echo " [i] use mysql backend"
     . /init/database/mysql.sh
 
   else

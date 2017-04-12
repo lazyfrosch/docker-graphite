@@ -52,13 +52,32 @@ waitForDatabase() {
 
 configureMysql() {
 
-  (
-    echo "--- create user 'graphite'@'%' IDENTIFIED BY '${DATABASE_GRAPHITE_PASS}';"
-    echo "CREATE DATABASE IF NOT EXISTS graphite;"
-    echo "GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE, CREATE VIEW, ALTER, INDEX, EXECUTE ON graphite.* TO 'graphite'@'%' IDENTIFIED BY '${DATABASE_GRAPHITE_PASS}';"
-    echo "FLUSH PRIVILEGES;"
-  ) | mysql ${MYSQL_OPTS}
+  # check if database already created ...
+  #
+  query="SELECT TABLE_SCHEMA FROM information_schema.tables WHERE table_schema = \"graphite\" limit 1;"
 
+  status=$(mysql ${MYSQL_OPTS} --batch --execute="${query}")
+
+  if [ $(echo "${status}" | wc -w) -eq 0 ]
+  then
+    # Database isn't created
+    # well, i do my job ...
+    #
+    echo " [i] Initializing database."
+
+    (
+      echo "--- create user 'graphite'@'%' IDENTIFIED BY '${DATABASE_GRAPHITE_PASS}';"
+      echo "CREATE DATABASE IF NOT EXISTS graphite;"
+      echo "GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE, CREATE VIEW, ALTER, INDEX, EXECUTE ON graphite.* TO 'graphite'@'%' IDENTIFIED BY '${DATABASE_GRAPHITE_PASS}';"
+      echo "FLUSH PRIVILEGES;"
+    ) | mysql ${MYSQL_OPTS}
+
+    if [ $? -eq 1 ]
+    then
+      echo " [E] can't create Database 'graphite'"
+      exit 1
+    fi
+  fi
 
   sed -i \
     -e "s/%DBA_FILE%/graphite/" \

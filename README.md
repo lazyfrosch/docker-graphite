@@ -6,9 +6,9 @@ A Docker container for an complete graphite Stack. Usable in combination with Gr
 
 # Status
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/bodsch/docker-graphite.svg?branch=1704-01)][hub]
-[![Image Size](https://images.microbadger.com/badges/image/bodsch/docker-graphite.svg?branch=1704-01)][microbadger]
-[![Build Status](https://travis-ci.org/bodsch/docker-graphite.svg?branch=1704-01)][travis]
+[![Docker Pulls](https://img.shields.io/docker/pulls/bodsch/docker-graphite.svg?branch=1704-02)][hub]
+[![Image Size](https://images.microbadger.com/badges/image/bodsch/docker-graphite.svg?branch=1704-02)][microbadger]
+[![Build Status](https://travis-ci.org/bodsch/docker-graphite.svg?branch=1704-02)][travis]
 
 [hub]: https://hub.docker.com/r/bodsch/docker-graphite/
 [microbadger]: https://microbadger.com/images/bodsch/docker-graphite
