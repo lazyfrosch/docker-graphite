@@ -3,14 +3,14 @@ FROM alpine:latest
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1704-02"
+LABEL version="1705-01"
 
 ENV \
   ALPINE_MIRROR="dl-cdn.alpinelinux.org" \
   ALPINE_VERSION="edge" \
   TERM=xterm \
-  BUILD_DATE="2017-04-08" \
-  GRAPHITE_VERSION="1.0.0" \
+  BUILD_DATE="2017-05-01" \
+  GRAPHITE_VERSION="1.1.0" \
   APK_ADD="build-base cairo git libffi-dev mysql-client nginx supervisor pwgen python2 python2-dev py2-pip py2-cairo py2-parsing py-mysqldb" \
   APK_DEL="build-base git libffi-dev python2-dev"
 
