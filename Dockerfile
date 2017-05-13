@@ -3,13 +3,13 @@ FROM alpine:latest
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1705-01"
+LABEL version="1705-03"
 
 ENV \
   ALPINE_MIRROR="dl-cdn.alpinelinux.org" \
   ALPINE_VERSION="edge" \
   TERM=xterm \
-  BUILD_DATE="2017-05-01" \
+  BUILD_DATE="2017-05-13" \
   GRAPHITE_VERSION="1.1.0" \
   APK_ADD="build-base cairo git libffi-dev mysql-client nginx supervisor pwgen python2 python2-dev py2-pip py2-cairo py2-parsing py-mysqldb" \
   APK_DEL="build-base git libffi-dev python2-dev"
@@ -28,7 +28,7 @@ LABEL org.label-schema.build-date=${BUILD_DATE} \
       org.label-schema.version=${GRAPHITE_VERSION} \
       org.label-schema.schema-version="1.0" \
       com.microscaling.docker.dockerfile="/Dockerfile" \
-      com.microscaling.license="GNU General Public License v3.0"
+      com.microscaling.license="The Unlicense"
 
 # ---------------------------------------------------------------------------------------
 

@@ -1,3 +1,11 @@
+#from os import environ
+#
+## Set SECRET_KEY if passed in via environment variable
+#try:
+#    if environ['SECRET_KEY']:
+#        SECRET_KEY = environ['SECRET_KEY']
+#except KeyError:
+#    pass
 
 SECRET_KEY = 'AYGKXwz5gaH98MsSDlIviZKJLh4a9eucEu5iivdn'
 
