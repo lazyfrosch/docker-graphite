@@ -48,14 +48,18 @@ You can find the Container also at  [DockerHub](https://hub.docker.com/r/bodsch/
     docker run \
       --rm \
       --interactive \
+      --tty \
       --publish=2003:2003 \
       --publish=7002:7002 \
       --publish=8088:8080 \
-      --tty \
+      --volume=/data/docker/graphite:/srv \
       --hostname=graphite \
       --name=graphite \
       bodsch/docker-graphite
 
+Notes:
+
+* Please make sure to specify a hostname, so that internal metrics of carbon are not saved with a temporary hostname
 
 # supported Environment Vars
 
@@ -71,7 +75,7 @@ You can find the Container also at  [DockerHub](https://hub.docker.com/r/bodsch/
 
 `MEMCACHE_HOST`
 
-`MEMCACHE_PORT` (defaul: 11211)
+`MEMCACHE_PORT` (default: 11211)
 
 `DATABASE_GRAPHITE_PASS` (default: graphite)
 
@@ -89,4 +93,3 @@ You can find the Container also at  [DockerHub](https://hub.docker.com/r/bodsch/
  - 2003: the Carbon line receiver port (tcp and udp)
  - 7002: the Carbon cache query port
  - 8080: the Graphite-Web port
-
