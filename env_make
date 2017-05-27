@@ -1,0 +1,22 @@
+PORTS = \
+  --publish 2003:2003 \
+  --publish 2003:2003/udp \
+  --publish 7002:7002 \
+  --publish 8088:8080
+
+VOLUMES = \
+  --volume /var/log/docker:/var/log \
+  --volume /tmp/docker-data:/srv
+
+ENV = \
+  --env USE_EXTERNAL_CARBON=false \
+  --env DATABASE_TYPE=sqlite
+
+# other environment vars:
+#  --env MYSQL_HOST=database \
+#  --env MYSQL_PORT=3306 \
+#  --env MYSQL_ROOT_USER=root
+#  --env MYSQL_ROOT_PASS="seCret"
+#  --env MEMCACHE_HOST=memcache \
+#  --env MEMCACHE_PORT=11211 \
+#  --env DATABASE_GRAPHITE_PASS=graphite \
