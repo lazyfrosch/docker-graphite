@@ -3,7 +3,6 @@ docker-graphite
 
 A Docker container for an complete graphite Stack. Usable in combination with Grafana.
 
-
 # Status
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/bodsch/docker-graphite.svg?branch=1705-03)][hub]
@@ -63,23 +62,33 @@ Notes:
 
 # supported Environment Vars
 
-`DATABASE_TYPE` (default: sqlite)
+`DATABASE_TYPE` (default: `sqlite`)
 
 `MYSQL_HOST`
 
 `MYSQL_PORT`
 
-`MYSQL_ROOT_USER` (default: root)
+`MYSQL_ROOT_USER` (default: `root`)
 
 `MYSQL_ROOT_PASS`
 
 `MEMCACHE_HOST`
 
-`MEMCACHE_PORT` (default: 11211)
+`MEMCACHE_PORT` (default: `11211`)
 
-`DATABASE_GRAPHITE_PASS` (default: graphite)
+`DATABASE_GRAPHITE_PASS` (default: `graphite`)
 
-`USE_EXTERNAL_CARBON` (default: false)
+`USE_EXTERNAL_CARBON` (default: `false`)
+
+## Limitations
+
+The Database store only Dashboard and i think, **grafana** are the better Tools for this part.
+
+Conclusion, I do not use the database feature of graphite (sorry, guys).
+The `sqlite` database will only created in the `/tmp` directory and not used.
+
+When your using a external carbon-writer (like `go-carbon`) you do not need the internal carbon.
+You can disable this part with `USE_EXTERNAL_CARBON`.
 
 
 # includes
