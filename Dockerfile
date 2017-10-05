@@ -7,7 +7,7 @@ ENV \
   ALPINE_MIRROR="mirror1.hs-esslingen.de/pub/Mirrors" \
   ALPINE_VERSION="v3.6" \
   TERM=xterm \
-  BUILD_DATE="2017-08-29" \
+  BUILD_DATE="2017-10-05" \
   GRAPHITE_VERSION="1.1.0" \
   APK_ADD="build-base cairo git libffi-dev mysql-client nginx supervisor pwgen python2 python2-dev py2-pip py2-cairo py2-parsing py-mysqldb" \
   APK_DEL="build-base git libffi-dev python2-dev"
@@ -18,7 +18,7 @@ ENV \
 EXPOSE 2003 2003/udp 7002 8080
 
 LABEL \
-  version="1708-35" \
+  version="1710" \
   org.label-schema.build-date=${BUILD_DATE} \
   org.label-schema.name="Graphite Docker Image" \
   org.label-schema.description="Inofficial Graphite Docker Image" \
