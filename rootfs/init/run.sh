@@ -9,24 +9,14 @@ fi
 
 WORK_DIR="/srv"
 
-DATABASE_TYPE=${DATABASE_TYPE:-sqlite}
-
-MYSQL_HOST=${MYSQL_HOST:-""}
-MYSQL_PORT=${MYSQL_PORT:-"3306"}
-MYSQL_ROOT_USER=${MYSQL_ROOT_USER:-"root"}
-MYSQL_ROOT_PASS=${MYSQL_ROOT_PASS:-""}
-
 MEMCACHE_HOST=${MEMCACHE_HOST:-""}
 MEMCACHE_PORT=${MEMCACHE_PORT:-11211}
-
-DATABASE_GRAPHITE_PASS=${DATABASE_GRAPHITE_PASS:-graphite}
 
 USE_EXTERNAL_CARBON=${USE_EXTERNAL_CARBON:-false}
 
 CONFIG_FILE="/opt/graphite/webapp/graphite/local_settings.py"
 
 # -------------------------------------------------------------------------------------------------
-
 
 prepare() {
 
@@ -73,8 +63,6 @@ prepare() {
 setup() {
 
   chown -R nginx ${WORK_DIR}/graphite/storage
-
-  sleep 2s
 
   PYTHONPATH=/opt/graphite/webapp django-admin.py migrate --verbosity 1 --settings=graphite.settings --noinput
   PYTHONPATH=/opt/graphite/webapp django-admin.py migrate --verbosity 1 --run-syncdb --settings=graphite.settings --noinput
