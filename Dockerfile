@@ -4,13 +4,9 @@ FROM alpine:3.6
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
 ENV \
-  ALPINE_MIRROR="mirror1.hs-esslingen.de/pub/Mirrors" \
-  ALPINE_VERSION="v3.6" \
   TERM=xterm \
-  BUILD_DATE="2017-11-01" \
-  GRAPHITE_VERSION="1.1.0" \
-  APK_ADD="build-base cairo git libffi-dev mysql-client nginx supervisor python2 python2-dev py2-pip py2-cairo py2-parsing py-mysqldb" \
-  APK_DEL="build-base git libffi-dev python2-dev"
+  BUILD_DATE="2017-11-28" \
+  GRAPHITE_VERSION="1.1.0"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
@@ -33,23 +29,24 @@ LABEL \
 # ---------------------------------------------------------------------------------------
 
 RUN \
-  echo "http://${ALPINE_MIRROR}/alpine/${ALPINE_VERSION}/main"       > /etc/apk/repositories && \
-  echo "http://${ALPINE_MIRROR}/alpine/${ALPINE_VERSION}/community" >> /etc/apk/repositories && \
-  apk --quiet --no-cache update && \
-  apk --quiet --no-cache upgrade && \
-  apk --quiet --no-cache add ${APK_ADD} && \
+  apk update --quiet --no-cache && \
+  apk upgrade --quiet --no-cache && \
+  apk add --quiet --no-cache --virtual .build-deps \
+    build-base git libffi-dev py2-pip python2-dev && \
+  apk add --quiet --no-cache \
+    cairo mysql-client nginx supervisor python2 py2-cairo py2-parsing py-mysqldb && \
   pip install \
-    --trusted-host http://d.pypi.python.org/simple --upgrade pip && \
+    --quiet --trusted-host http://d.pypi.python.org/simple --upgrade pip && \
   mkdir /src && \
   git clone https://github.com/graphite-project/whisper.git      /src/whisper      && \
   git clone https://github.com/graphite-project/carbon.git       /src/carbon       && \
   git clone https://github.com/graphite-project/graphite-web.git /src/graphite-web && \
-  cd /src/graphite-web &&  pip install -r requirements.txt && \
-  cd /src/whisper      &&  python setup.py install --quiet && \
-  cd /src/carbon       &&  python setup.py install --quiet && \
-  cd /src/graphite-web &&  python setup.py install --quiet && \
+  cd /src/graphite-web &&  pip install --quiet --requirement requirements.txt && \
+  cd /src/whisper      &&  python -W ignore::UserWarning:distutils.dist setup.py install --quiet > /dev/null && \
+  cd /src/carbon       &&  python -W ignore::UserWarning:distutils.dist setup.py install --quiet > /dev/null && \
+  cd /src/graphite-web &&  python -W ignore::UserWarning:distutils.dist setup.py install --quiet > /dev/null && \
   mv /opt/graphite/conf/graphite.wsgi.example /opt/graphite/webapp/graphite/graphite_wsgi.py && \
-  apk --quiet --purge del ${APK_DEL} && \
+  apk del --quiet .build-deps && \
   rm -rf \
     /src \
     /tmp/* \
@@ -59,6 +56,12 @@ RUN \
 COPY rootfs/ /
 
 VOLUME /srv
+
+HEALTHCHECK \
+  --interval=5s \
+  --timeout=2s \
+  --retries=12 \
+  CMD curl --silent --fail http://localhost:8080 || exit 1
 
 CMD [ "/init/run.sh" ]
 
