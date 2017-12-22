@@ -1,12 +1,11 @@
 
-FROM alpine:3.6
-
-MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
+FROM alpine:3.7
 
 ENV \
   TERM=xterm \
-  BUILD_DATE="2017-11-28" \
-  GRAPHITE_VERSION="1.1.0"
+  BUILD_DATE="2017-12-22" \
+  BUILD_TYPE="stable" \
+  GRAPHITE_VERSION="1.1.1"
 
 # 2003: Carbon line receiver port
 # 7002: Carbon cache query port
@@ -14,7 +13,8 @@ ENV \
 EXPOSE 2003 2003/udp 7002 8080
 
 LABEL \
-  version="1711" \
+  version="1712" \
+  maintainer="Bodo Schulz <bodo@boone-schulz.de>" \
   org.label-schema.build-date=${BUILD_DATE} \
   org.label-schema.name="Graphite Docker Image" \
   org.label-schema.description="Inofficial Graphite Docker Image" \
@@ -41,6 +41,13 @@ RUN \
   git clone https://github.com/graphite-project/whisper.git      /src/whisper      && \
   git clone https://github.com/graphite-project/carbon.git       /src/carbon       && \
   git clone https://github.com/graphite-project/graphite-web.git /src/graphite-web && \
+  if [ "${BUILD_TYPE}" == "stable" ] ; then \
+    for i in whisper carbon graphite-web ; do \
+      echo "switch to stable Tag ${GRAPHITE_VERSION} for $i" && \
+      cd /src/$i ; \
+      git checkout tags/${GRAPHITE_VERSION} 2> /dev/null ; \
+    done ; \
+  fi && \
   cd /src/graphite-web &&  pip install --quiet --requirement requirements.txt && \
   cd /src/whisper      &&  python -W ignore::UserWarning:distutils.dist setup.py install --quiet > /dev/null && \
   cd /src/carbon       &&  python -W ignore::UserWarning:distutils.dist setup.py install --quiet > /dev/null && \
